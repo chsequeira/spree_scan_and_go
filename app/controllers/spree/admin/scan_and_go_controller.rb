@@ -73,8 +73,15 @@ module Spree
       end
 
       def product(input)
-        if product = Spree::Product.find_by_id(input)
-          redirect = edit_admin_product_path(product)
+        if variant = Spree::Variant.find_by_sku(input)
+          product = variant.product
+          if product.variants.count == 0
+            # it's a product
+            redirect = edit_admin_product_url(product)
+          else
+            # it's a variant
+            redirect = edit_admin_product_variant_url( product, variant)
+          end
         else
           error = t(:couldnt_find_product)
         end
